@@ -1,4 +1,3 @@
-
 import asyncio
 import aiohttp
 import aiosqlite
@@ -8,7 +7,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # --- НАСТРОЙКИ ---
 BOT_TOKEN = "8860977552:AAEsSlQxOR_gsaTAS4ZAXuFVOoWLVB_WOIk"
-MARZBAN_URL = "https://fgsu34.duckdns.org:8000" # Ваш новый домен
+MARZBAN_URL = "https://fgsu34.duckdns.org:8000" # Ваш домен с SSL
 MARZBAN_USER = "admin"
 MARZBAN_PASS = "admin2026"
 
@@ -42,17 +41,23 @@ async def create_vpn_key(username: str):
     async with aiohttp.ClientSession() as session:
         login_url = f"{MARZBAN_URL}/api/admin/token"
         login_data = {"username": MARZBAN_USER, "password": MARZBAN_PASS}
+        
+        # 1. Авторизация
         try:
             async with session.post(login_url, data=login_data) as resp:
                 if resp.status != 200:
-                    return None, "Ошибка авторизации в панели"
+                    error_text = await resp.text()
+                    return None, f"Ошибка авторизации: {error_text}"
                 token_data = await resp.json()
                 access_token = token_data.get("access_token")
-        except Exception:
-            return None, "Сервер Marzban недоступен"
+        except Exception as e:
+            return None, f"Сервер недоступен: {str(e)}"
 
+        # 2. Создание пользователя
         headers = {"Authorization": f"Bearer {access_token}"}
         user_url = f"{MARZBAN_URL}/api/user"
+        
+        # Максимально простой формат для создания пользователя
         user_data = {
             "username": username,
             "proxies": {"vless": {}},
@@ -66,7 +71,9 @@ async def create_vpn_key(username: str):
             if resp.status == 409: 
                 return None, "У вас уже есть активный ключ!"
             if resp.status != 200:
-                return None, "Ошибка создания ключа"
+                # Показываем точный ответ сервера, чтобы понять причину
+                error_text = await resp.text()
+                return None, f"Ошибка создания: {error_text}"
             
             user_info = await resp.json()
             subscription_url = user_info.get("subscription_url")
@@ -102,6 +109,7 @@ async def start_handler(message: types.Message):
         f"❓ <i>Не получается? Жмите «Инструкция» или «Поддержка»</i>"
     )
     
+    # Отправляем меню и принудительно убираем старую нижнюю клавиатуру
     await message.answer(welcome_text, reply_markup=get_main_menu(), parse_mode="HTML")
     await message.answer(".", reply_markup=types.ReplyKeyboardRemove())
 
@@ -113,8 +121,10 @@ async def free_key_handler(callback: types.CallbackQuery):
     link, error = await create_vpn_key(username)
     
     if error:
+        # Если ошибка, выводим её текст
         await callback.message.edit_text(
-            f"❌ {error}",
+            f"❌ <b>Ошибка:</b>\n<code>{error}</code>",
+            parse_mode="HTML",
             reply_markup=InlineKeyboardMarkup(inline_keyboard=[
                 [InlineKeyboardButton(text="⬅️ В главное меню", callback_data="back_to_main")]
             ])
@@ -124,7 +134,7 @@ async def free_key_handler(callback: types.CallbackQuery):
             f"✅ <b>Ваш VPN-ключ готов!</b>\n\n"
             f"🔗 <b>Ссылка для подключения:</b>\n"
             f"<code>{link}</code>\n\n"
-            f"Скопируйте её и добавьте в приложение v2rayNG, Streisand или Happ."
+            f"Скопируйте её и добавьте в приложение."
         )
         await callback.message.edit_text(
             text,
@@ -196,7 +206,7 @@ async def noop_handler(callback: types.CallbackQuery):
 @dp.callback_query(F.data == "referrals")
 async def referrals_handler(callback: types.CallbackQuery):
     await callback.answer("Реферальная система в разработке...", show_alert=True)
-    
+
 @dp.callback_query(F.data == "back_to_main")
 async def back_handler(callback: types.CallbackQuery):
     welcome_text = (
@@ -215,7 +225,7 @@ async def back_handler(callback: types.CallbackQuery):
 async def main():
     await init_db()
     bot = Bot(token=BOT_TOKEN)
-    print("Бот с сеткой из 8 кнопок запущен!")
+    print("Бот запущен!")
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
