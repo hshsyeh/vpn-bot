@@ -7,7 +7,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeybo
 
 # --- НАСТРОЙКИ ---
 BOT_TOKEN = "8860977552:AAEsSlQxOR_gsaTAS4ZAXuFVOoWLVB_WOIk"
-MARZBAN_URL = "http://104.143.218.5:8080" # Адрес вашей панели
+MARZBAN_URL = "https://fgsu34.duckdns.org:8000"" # Адрес вашей панели
 MARZBAN_USER = "admin"
 MARZBAN_PASS = "admin2026"
 
