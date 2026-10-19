@@ -7,7 +7,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # --- НАСТРОЙКИ ---
 BOT_TOKEN = "8860977552:AAEsSlQxOR_gsaTAS4ZAXuFVOoWLVB_WOIk"
-MARZBAN_URL = "https://fgsu34.duckdns.org:8000" # Ваш домен с SSL
+MARZBAN_URL = "https://fgsu34.duckdns.org:8000"
 MARZBAN_USER = "admin"
 MARZBAN_PASS = "admin2026"
 
@@ -57,11 +57,10 @@ async def create_vpn_key(username: str):
         headers = {"Authorization": f"Bearer {access_token}"}
         user_url = f"{MARZBAN_URL}/api/user"
         
-        # Максимально простой формат для создания пользователя
+        # Убрали "inbounds", чтобы Marzban использовал все доступные
         user_data = {
             "username": username,
             "proxies": {"vless": {}},
-            "inbounds": {"vless": ["VLESS TCP REALITY"]},
             "expire": 0,
             "data_limit": 0,
             "status": "active"
@@ -71,7 +70,6 @@ async def create_vpn_key(username: str):
             if resp.status == 409: 
                 return None, "У вас уже есть активный ключ!"
             if resp.status != 200:
-                # Показываем точный ответ сервера, чтобы понять причину
                 error_text = await resp.text()
                 return None, f"Ошибка создания: {error_text}"
             
@@ -109,7 +107,6 @@ async def start_handler(message: types.Message):
         f"❓ <i>Не получается? Жмите «Инструкция» или «Поддержка»</i>"
     )
     
-    # Отправляем меню и принудительно убираем старую нижнюю клавиатуру
     await message.answer(welcome_text, reply_markup=get_main_menu(), parse_mode="HTML")
     await message.answer(".", reply_markup=types.ReplyKeyboardRemove())
 
@@ -121,7 +118,6 @@ async def free_key_handler(callback: types.CallbackQuery):
     link, error = await create_vpn_key(username)
     
     if error:
-        # Если ошибка, выводим её текст
         await callback.message.edit_text(
             f"❌ <b>Ошибка:</b>\n<code>{error}</code>",
             parse_mode="HTML",
