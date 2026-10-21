@@ -57,10 +57,11 @@ async def create_vpn_key(username: str):
         headers = {"Authorization": f"Bearer {access_token}"}
         user_url = f"{MARZBAN_URL}/api/user"
         
-        # Убрали "inbounds", чтобы Marzban использовал все доступные
+        # ДОБАВЛЕНА СТРОКА "inbounds", чтобы бот сам включал VLESS
         user_data = {
             "username": username,
             "proxies": {"vless": {}},
+            "inbounds": {"vless": ["VLESS TCP REALITY"]},
             "expire": 0,
             "data_limit": 0,
             "status": "active"
@@ -76,7 +77,8 @@ async def create_vpn_key(username: str):
             user_info = await resp.json()
             subscription_url = user_info.get("subscription_url")
             if subscription_url:
-                return subscription_url, None
+                # ИСПРАВЛЕНО: теперь бот присылает ПОЛНУЮ ссылку
+                return f"{MARZBAN_URL}{subscription_url}", None
             return None, "Ключ создан, но ссылка не найдена"
 
 # --- КЛАВИАТУРА (СЕТКА 8 КНОПОК) ---
@@ -194,8 +196,7 @@ async def rules_handler(callback: types.CallbackQuery):
         ])
     )
     await callback.answer()
-
-@dp.callback_query(F.data == "noop")
+    @dp.callback_query(F.data == "noop")
 async def noop_handler(callback: types.CallbackQuery):
     await callback.answer("Оплата скоро появится!", show_alert=True)
 
