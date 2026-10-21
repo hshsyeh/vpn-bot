@@ -57,7 +57,6 @@ async def create_vpn_key(username: str):
         headers = {"Authorization": f"Bearer {access_token}"}
         user_url = f"{MARZBAN_URL}/api/user"
         
-        # ДОБАВЛЕНА СТРОКА "inbounds", чтобы бот сам включал VLESS
         user_data = {
             "username": username,
             "proxies": {"vless": {}},
@@ -77,7 +76,6 @@ async def create_vpn_key(username: str):
             user_info = await resp.json()
             subscription_url = user_info.get("subscription_url")
             if subscription_url:
-                # ИСПРАВЛЕНО: теперь бот присылает ПОЛНУЮ ссылку
                 return f"{MARZBAN_URL}{subscription_url}", None
             return None, "Ключ создан, но ссылка не найдена"
 
@@ -196,10 +194,10 @@ async def rules_handler(callback: types.CallbackQuery):
         ])
     )
     await callback.answer()
-    @dp.callback_query(F.data == "noop")
+
+@dp.callback_query(F.data == "noop")
 async def noop_handler(callback: types.CallbackQuery):
     await callback.answer("Оплата скоро появится!", show_alert=True)
-
 @dp.callback_query(F.data == "referrals")
 async def referrals_handler(callback: types.CallbackQuery):
     await callback.answer("Реферальная система в разработке...", show_alert=True)
