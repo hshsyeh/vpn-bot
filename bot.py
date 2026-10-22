@@ -39,7 +39,6 @@ async def save_user(user: types.User):
 
 # --- ФУНКЦИЯ ДЛЯ СОЗДАНИЯ КЛЮЧА В MARZBAN ---
 async def create_vpn_key(username: str):
-    # Отключаем проверку SSL, чтобы бот не отваливался с ошибкой Server disconnected
     connector = aiohttp.TCPConnector(ssl=False)
     
     async with aiohttp.ClientSession(connector=connector) as session:
@@ -57,10 +56,10 @@ async def create_vpn_key(username: str):
         except Exception as e:
             return None, f"Сервер недоступен: {str(e)}"
 
-        # 2. Создание пользователя
         headers = {"Authorization": f"Bearer {access_token}"}
-        user_url = f"{MARZBAN_URL}/api/user"
         
+        # 2. Пытаемся создать пользователя
+        user_url = f"{MARZBAN_URL}/api/user"
         user_data = {
             "username": username,
             "proxies": {"vless": {}},
@@ -71,21 +70,36 @@ async def create_vpn_key(username: str):
         }
         
         async with session.post(user_url, json=user_data, headers=headers) as resp:
-            if resp.status == 409: 
-                return None, "У вас уже есть активный ключ!"
-            if resp.status != 200:
+            user_info = None
+            
+            # Если пользователь уже существует (ошибка 409)
+            if resp.status == 409:
+                # Просто запрашиваем его данные по имени
+                get_url = f"{MARZBAN_URL}/api/user/{username}"
+                async with session.get(get_url, headers=headers) as get_resp:
+                    if get_resp.status == 200:
+                        user_info = await get_resp.json()
+                    else:
+                        return None, "Ошибка: не удалось получить данные существующего пользователя."
+            
+            # Если создан успешно
+            elif resp.status == 200:
+                user_info = await resp.json()
+                
+            # Любая другая ошибка
+            else:
                 error_text = await resp.text()
                 return None, f"Ошибка создания: {error_text}"
             
-            user_info = await resp.json()
-            subscription_url = user_info.get("subscription_url")
+            # 3. Формируем ссылку
+            if user_info:
+                subscription_url = user_info.get("subscription_url")
+                if subscription_url:
+                    if subscription_url.startswith("http"):
+                        return subscription_url, None
+                    else:
+                        return f"{MARZBAN_URL}{subscription_url}", None
             
-            # Исправленный блок (проверяем, не начинается ли ссылка уже с http)
-            if subscription_url:
-                if subscription_url.startswith("http"):
-                    return subscription_url, None
-                else:
-                    return f"{MARZBAN_URL}{subscription_url}", None
             return None, "Ключ создан, но ссылка не найдена"
 
 # --- КЛАВИАТУРА (СЕТКА 8 КНОПОК) ---
@@ -181,7 +195,7 @@ async def help_handler(callback: types.CallbackQuery):
 async def buy_handler(callback: types.CallbackQuery):
     await callback.message.edit_text(
         "💎 <b>Выберите подходящий тариф:</b>\n\n"
-        "Здесь мы позже подключим оплату.",
+"Здесь мы позже подключим оплату.",
         parse_mode="HTML",
         reply_markup=InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="📅 1 месяц — 199 ₽", callback_data="noop")],
