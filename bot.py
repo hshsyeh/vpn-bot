@@ -74,10 +74,13 @@ async def create_vpn_key(username: str):
                 return None, f"Ошибка создания: {error_text}"
             
             user_info = await resp.json()
-            subscription_url = user_info.get("subscription_url")
-            if subscription_url:
-                return f"{MARZBAN_URL}{subscription_url}", None
-            return None, "Ключ создан, но ссылка не найдена"
+subscription_url = user_info.get("subscription_url")
+if subscription_url:
+    if subscription_url.startswith("http"):
+        return subscription_url, None
+    else:
+        return f"{MARZBAN_URL}{subscription_url}", None
+return None, "Ключ создан, но ссылка не найдена"
 
 # --- КЛАВИАТУРА (СЕТКА 8 КНОПОК) ---
 def get_main_menu():
