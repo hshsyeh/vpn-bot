@@ -8,7 +8,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 # --- НАСТРОЙКИ ---
 # ВНИМАНИЕ! ОБЯЗАТЕЛЬНО СМЕНИ ЭТИ ДАННЫЕ, ОНИ ЗАСВЕТИЛИСЬ В ЧАТЕ!
 BOT_TOKEN = "8860977552:AAEsSlQxOR_gsaTAS4ZAXuFVOoWLVB_WOIk"
-MARZBAN_URL = "https://fgsu34.duckdns.org:8001"
+MARZBAN_URL = "http://fgsu34.duckdns.org:8001"
 MARZBAN_USER = "admin"
 MARZBAN_PASS = "admin2222"
 
