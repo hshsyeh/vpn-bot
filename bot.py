@@ -6,6 +6,7 @@ from aiogram.filters import CommandStart
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # --- НАСТРОЙКИ ---
+# ВНИМАНИЕ! ОБЯЗАТЕЛЬНО СМЕНИ ЭТИ ДАННЫЕ, ОНИ ЗАСВЕТИЛИСЬ В ЧАТЕ!
 BOT_TOKEN = "8860977552:AAEsSlQxOR_gsaTAS4ZAXuFVOoWLVB_WOIk"
 MARZBAN_URL = "https://fgsu34.duckdns.org:8001"
 MARZBAN_USER = "admin"
@@ -74,13 +75,15 @@ async def create_vpn_key(username: str):
                 return None, f"Ошибка создания: {error_text}"
             
             user_info = await resp.json()
-subscription_url = user_info.get("subscription_url")
-if subscription_url:
-    if subscription_url.startswith("http"):
-        return subscription_url, None
-    else:
-        return f"{MARZBAN_URL}{subscription_url}", None
-return None, "Ключ создан, но ссылка не найдена"
+            subscription_url = user_info.get("subscription_url")
+            
+            # Исправленный блок (теперь ссылка не дублируется)
+            if subscription_url:
+                if subscription_url.startswith("http"):
+                    return subscription_url, None
+                else:
+                    return f"{MARZBAN_URL}{subscription_url}", None
+            return None, "Ключ создан, но ссылка не найдена"
 
 # --- КЛАВИАТУРА (СЕТКА 8 КНОПОК) ---
 def get_main_menu():
@@ -197,10 +200,10 @@ async def rules_handler(callback: types.CallbackQuery):
         ])
     )
     await callback.answer()
-
-@dp.callback_query(F.data == "noop")
+    callback_query(F.data == "noop")
 async def noop_handler(callback: types.CallbackQuery):
     await callback.answer("Оплата скоро появится!", show_alert=True)
+
 @dp.callback_query(F.data == "referrals")
 async def referrals_handler(callback: types.CallbackQuery):
     await callback.answer("Реферальная система в разработке...", show_alert=True)
