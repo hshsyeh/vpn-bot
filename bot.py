@@ -8,7 +8,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 # --- НАСТРОЙКИ ---
 # ВНИМАНИЕ! ОБЯЗАТЕЛЬНО СМЕНИ ЭТИ ДАННЫЕ, ОНИ ЗАСВЕТИЛИСЬ В ЧАТЕ!
 BOT_TOKEN = "8860977552:AAEsSlQxOR_gsaTAS4ZAXuFVOoWLVB_WOIk"
-MARZBAN_URL = "http://fgsu34.duckdns.org:8001"
+MARZBAN_URL = "https://fgsu34.duckdns.org:8001"  # https и порт 8001
 MARZBAN_USER = "admin"
 MARZBAN_PASS = "admin2222"
 
@@ -39,7 +39,10 @@ async def save_user(user: types.User):
 
 # --- ФУНКЦИЯ ДЛЯ СОЗДАНИЯ КЛЮЧА В MARZBAN ---
 async def create_vpn_key(username: str):
-    async with aiohttp.ClientSession() as session:
+    # Отключаем проверку SSL, чтобы бот не отваливался с ошибкой Server disconnected
+    connector = aiohttp.TCPConnector(ssl=False)
+    
+    async with aiohttp.ClientSession(connector=connector) as session:
         login_url = f"{MARZBAN_URL}/api/admin/token"
         login_data = {"username": MARZBAN_USER, "password": MARZBAN_PASS}
         
@@ -77,7 +80,7 @@ async def create_vpn_key(username: str):
             user_info = await resp.json()
             subscription_url = user_info.get("subscription_url")
             
-            # Исправленный блок (теперь ссылка не дублируется)
+            # Исправленный блок (проверяем, не начинается ли ссылка уже с http)
             if subscription_url:
                 if subscription_url.startswith("http"):
                     return subscription_url, None
@@ -200,7 +203,8 @@ async def rules_handler(callback: types.CallbackQuery):
         ])
     )
     await callback.answer()
-    callback_query(F.data == "noop")
+
+@dp.callback_query(F.data == "noop")
 async def noop_handler(callback: types.CallbackQuery):
     await callback.answer("Оплата скоро появится!", show_alert=True)
 
