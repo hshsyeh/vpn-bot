@@ -7,13 +7,13 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # --- НАСТРОЙКИ ---
 # ВНИМАНИЕ! ТОКЕН БОТА ОБЯЗАТЕЛЬНО ПЕРЕВЫПУСТИТЕ В @BotFather!
-BOT_TOKEN = "ВАШ_НОВЫЙ_ТОКЕН_БОТА"
+BOT_TOKEN = "8860977552:AAEsSlQxOR_gsaTAS4ZAXuFVOoWLVB_WOIk"
 
 # Настройки Remnawave
 REMNAWAVE_URL = "https://smoke6745.online" 
 REMNAWAVE_API_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiNjQ0MGJhYmYtMTIyMi00ZDJiLWFiNmUtYjgxMmU2NzVjZGY4IiwidXNlcm5hbWUiOm51bGwsInJvbGUiOiJBUEkiLCJpYXQiOjE3OTI4NjAwNTEsImV4cCI6MTc5NTQ1MjA1MX0.0CRTNQPzgU9RHxMXQNenkoZhOY8JFuZ0AtPY72xVbUU"
 # UUID вашего сквада (Настройки -> Внутренние сквады)
-REMNAWAVE_SQUAD_UUID = "ВАШ_UUID_СКВАДА"
+REMNAWAVE_SQUAD_UUID = "6440babf-1222-4d2b-ab6e-b812e675cdf8"
 
 dp = Dispatcher()
 
