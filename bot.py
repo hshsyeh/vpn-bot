@@ -6,11 +6,14 @@ from aiogram.filters import CommandStart
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # --- НАСТРОЙКИ ---
-# ВНИМАНИЕ! ОБЯЗАТЕЛЬНО СМЕНИ ЭТИ ДАННЫЕ, ОНИ ЗАСВЕТИЛИСЬ В ЧАТЕ!
-BOT_TOKEN = "8860977552:AAEsSlQxOR_gsaTAS4ZAXuFVOoWLVB_WOIk"
-MARZBAN_URL = "https://fgsu34.duckdns.org:8001"  # https и порт 8001
-MARZBAN_USER = "admin"
-MARZBAN_PASS = "admin2222"
+# ВНИМАНИЕ! ТОКЕН БОТА ОБЯЗАТЕЛЬНО ПЕРЕВЫПУСТИТЕ В @BotFather!
+BOT_TOKEN = "ВАШ_НОВЫЙ_ТОКЕН_БОТА"
+
+# Настройки Remnawave
+REMNAWAVE_URL = "https://smoke6745.online" 
+REMNAWAVE_API_TOKEN = "ВАШ_API_ТОКЕН_ИЗ_ПАНЕЛИ_REMNAWAVE"
+# UUID вашего сквада (Настройки -> Внутренние сквады)
+REMNAWAVE_SQUAD_UUID = "ВАШ_UUID_СКВАДА"
 
 dp = Dispatcher()
 
@@ -37,72 +40,61 @@ async def save_user(user: types.User):
         ''', (user.id, user.username, user.first_name))
         await db.commit()
 
-# --- ФУНКЦИЯ ДЛЯ СОЗДАНИЯ КЛЮЧА В MARZBAN ---
+# --- ФУНКЦИЯ ДЛЯ СОЗДАНИЯ КЛЮЧА В REMNAWAVE ---
 async def create_vpn_key(username: str):
-    connector = aiohttp.TCPConnector(ssl=False)
+    headers = {
+        "Authorization": f"Bearer {REMNAWAVE_API_TOKEN}",
+        "Content-Type": "application/json"
+    }
     
-    async with aiohttp.ClientSession(connector=connector) as session:
-        login_url = f"{MARZBAN_URL}/api/admin/token"
-        login_data = {"username": MARZBAN_USER, "password": MARZBAN_PASS}
-        
-        # 1. Авторизация
+    # Данные для создания пользователя (безлимит, до 2099 года)
+    user_data = {
+        "username": username,
+        "status": "ACTIVE",
+        "expireAt": "2099-12-31T23:59:59.000Z",
+        "trafficLimitBytes": 0,
+        "trafficLimitStrategy": "NO_RESET",
+        "activeInternalSquads": [REMNAWAVE_SQUAD_UUID]
+    }
+
+    async with aiohttp.ClientSession() as session:
         try:
-            async with session.post(login_url, data=login_data) as resp:
-                if resp.status != 200:
+            # 1. Пытаемся создать пользователя
+            async with session.post(f"{REMNAWAVE_URL}/api/users", json=user_data, headers=headers) as resp:
+                user_info = None
+                
+                # Если создан успешно
+                if resp.status in [200, 201]:
+                    data = await resp.json()
+                    user_info = data.get("response", data) # В Remnawave ответ часто обернут в "response"
+                
+                # Если пользователь уже существует (ошибка 409)
+                elif resp.status == 409:
+                    # Запрашиваем данные существующего пользователя
+                    async with session.get(f"{REMNAWAVE_URL}/api/users/by-username/{username}", headers=headers) as get_resp:
+                        if get_resp.status == 200:
+                            data = await get_resp.json()
+                            user_info = data.get("response", data)
+                        else:
+                            return None, "Ошибка: не удалось получить данные существующего пользователя."
+                
+                else:
                     error_text = await resp.text()
-                    return None, f"Ошибка авторизации: {error_text}"
-                token_data = await resp.json()
-                access_token = token_data.get("access_token")
+                    return None, f"Ошибка создания: {error_text}"
+                
+                # 2. Формируем ссылку
+                if user_info:
+                    # В Remnawave ссылка на подписку лежит в поле subscriptionUrl
+                    subscription_url = user_info.get("subscriptionUrl")
+                    if subscription_url:
+                        return subscription_url, None
+                
+                return None, "Ключ создан, но ссылка на подписку не найдена в ответе API."
+                
         except Exception as e:
             return None, f"Сервер недоступен: {str(e)}"
 
-        headers = {"Authorization": f"Bearer {access_token}"}
-        
-        # 2. Пытаемся создать пользователя
-        user_url = f"{MARZBAN_URL}/api/user"
-        user_data = {
-            "username": username,
-            "proxies": {"vless": {}},
-            "inbounds": {"vless": ["VLESS TCP REALITY"]},
-            "expire": 0,
-            "data_limit": 0,
-            "status": "active"
-        }
-        
-        async with session.post(user_url, json=user_data, headers=headers) as resp:
-            user_info = None
-            
-            # Если пользователь уже существует (ошибка 409)
-            if resp.status == 409:
-                # Просто запрашиваем его данные по имени
-                get_url = f"{MARZBAN_URL}/api/user/{username}"
-                async with session.get(get_url, headers=headers) as get_resp:
-                    if get_resp.status == 200:
-                        user_info = await get_resp.json()
-                    else:
-                        return None, "Ошибка: не удалось получить данные существующего пользователя."
-            
-            # Если создан успешно
-            elif resp.status == 200:
-                user_info = await resp.json()
-                
-            # Любая другая ошибка
-            else:
-                error_text = await resp.text()
-                return None, f"Ошибка создания: {error_text}"
-            
-            # 3. Формируем ссылку
-            if user_info:
-                subscription_url = user_info.get("subscription_url")
-                if subscription_url:
-                    if subscription_url.startswith("http"):
-                        return subscription_url, None
-                    else:
-                        return f"{MARZBAN_URL}{subscription_url}", None
-            
-            return None, "Ключ создан, но ссылка не найдена"
-
-# --- КЛАВИАТУРА (СЕТКА 8 КНОПОК) ---
+# --- КЛАВИАТУРА ---
 def get_main_menu():
     return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="💳 Подписка", callback_data="menu_buy"), 
@@ -195,7 +187,7 @@ async def help_handler(callback: types.CallbackQuery):
 async def buy_handler(callback: types.CallbackQuery):
     await callback.message.edit_text(
         "💎 <b>Выберите подходящий тариф:</b>\n\n"
-"Здесь мы позже подключим оплату.",
+        "Здесь мы позже подключим оплату.",
         parse_mode="HTML",
         reply_markup=InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="📅 1 месяц — 199 ₽", callback_data="noop")],
@@ -204,7 +196,6 @@ async def buy_handler(callback: types.CallbackQuery):
         ])
     )
     await callback.answer()
-
 @dp.callback_query(F.data == "rules")
 async def rules_handler(callback: types.CallbackQuery):
     await callback.message.edit_text(
@@ -244,7 +235,7 @@ async def back_handler(callback: types.CallbackQuery):
 async def main():
     await init_db()
     bot = Bot(token=BOT_TOKEN)
-    print("Бот запущен!")
+    print("Бот запущен и готов к работе с Remnawave!")
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
