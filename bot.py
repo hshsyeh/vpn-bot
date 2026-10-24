@@ -11,7 +11,7 @@ BOT_TOKEN = "ВАШ_НОВЫЙ_ТОКЕН_БОТА"
 
 # Настройки Remnawave
 REMNAWAVE_URL = "https://smoke6745.online" 
-REMNAWAVE_API_TOKEN = "ВАШ_API_ТОКЕН_ИЗ_ПАНЕЛИ_REMNAWAVE"
+REMNAWAVE_API_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiNjQ0MGJhYmYtMTIyMi00ZDJiLWFiNmUtYjgxMmU2NzVjZGY4IiwidXNlcm5hbWUiOm51bGwsInJvbGUiOiJBUEkiLCJpYXQiOjE3OTI4NjAwNTEsImV4cCI6MTc5NTQ1MjA1MX0.0CRTNQPzgU9RHxMXQNenkoZhOY8JFuZ0AtPY72xVbUU"
 # UUID вашего сквада (Настройки -> Внутренние сквады)
 REMNAWAVE_SQUAD_UUID = "ВАШ_UUID_СКВАДА"
 
