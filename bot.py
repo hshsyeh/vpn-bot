@@ -24,7 +24,7 @@ DB_PATH = "smokevpn.db"
 REMNA_URL = "https:/panel.user6745.online"   # без слэша в конце
 REMNA_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjA2OGZhOTctZWNhOC00YjFhLWI1MTYtNWIzMmY5OWQ0MmY5IiwidXNlcm5hbWUiOm51bGwsInJvbGUiOiJBUEkiLCJpYXQiOjE3OTI5NTAwMzUsImV4cCI6MzUyMDk1MDAzNX0.tk_aHHgCG8GqaRbSRQqH8v-Ry3orSQFn4ZVgbVtXVX4"
 REMNA_HEADERS = {"Authorization": f"Bearer {REMNA_TOKEN}", "Content-Type": "application/json"}
-REMNA_SQUAD_UUID = "2068fa97-eca8-4b1a-b516-5b32f99d42f9"                     # uuid internal squad (если используется), иначе ""
+REMNA_SQUAD_UUID = "6972f64e-feb0-4e76-9960-ab32bb8b9552"                     # uuid internal squad (если используется), иначе ""
 
 TRIAL_DAYS = 3                            # бесплатный пробный период
 REFERRER_BONUS_DAYS = 5                   # пригласившему за реферала
