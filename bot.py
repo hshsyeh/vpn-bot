@@ -6,7 +6,6 @@ from aiogram.filters import CommandStart
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # --- НАСТРОЙКИ ---
-# ВНИМАНИЕ! ТОКЕН БОТА ОБЯЗАТЕЛЬНО ПЕРЕВЫПУСТИТЕ В @BotFather!
 BOT_TOKEN = "8860977552:AAEsSlQxOR_gsaTAS4ZAXuFVOoWLVB_WOIk"
 
 # Настройки Remnawave
