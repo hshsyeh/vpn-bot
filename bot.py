@@ -6,12 +6,12 @@ from aiogram.filters import CommandStart
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # --- НАСТРОЙКИ ---
-# ВНИМАНИЕ! ВСТАВЬТЕ СЮДА НОВЫЕ ТОКЕНЫ ПОСЛЕ ПЕРЕВЫПУСКА!
-BOT_TOKEN = "ВАШ_НОВЫЙ_ТОКЕН_БОТА_ЗДЕСЬ"
+# ВАШ НОВЫЙ ТОКЕН
+BOT_TOKEN = "8860977552:AAHNNz_R0YcCzeeSR3f0N2xGFHCOcG-oygA"
 
 # Настройки Remnawave
 REMNAWAVE_URL = "https://smoke6745.online" 
-REMNAWAVE_API_TOKEN = "ВАШ_НОВЫЙ_ТОКЕН_API_ЗДЕСЬ"
+REMNAWAVE_API_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiNjQ0MGJhYmYtMTIyMi00ZDJiLWFiNmUtYjgxMmU2NzVjZGY4IiwidXNlcm5hbWUiOm51bGwsInJvbGUiOiJBUEkiLCJpYXQiOjE3OTI4NjAwNTEsImV4cCI6MTc5NTQ1MjA1MX0.0CRTNQPzgU9RHxMXQNenkoZhOY8JFuZ0AtPY72xVbUU"
 # UUID вашего сквада (Настройки -> Внутренние сквады)
 REMNAWAVE_SQUAD_UUID = "6972f64e-feb0-4e76-9960-ab32bb8b9552"
 
@@ -105,7 +105,6 @@ def get_main_menu():
 async def start_handler(message: types.Message):
     await save_user(message.from_user)
     
-    # НАЗВАНИЕ ИЗМЕНЕНО НА SMOKE VPN
     welcome_text = (
         f"🌐 <b>Smoke VPN</b>\n\n"
         f"🚀 <b>Как подключиться за 2 минуты:</b>\n\n"
@@ -117,7 +116,6 @@ async def start_handler(message: types.Message):
     )
     
     await message.answer(welcome_text, reply_markup=get_main_menu(), parse_mode="HTML")
-    # УДАЛЕНА СТРОКА, КОТОРАЯ ПРИСЫЛАЛА ТОЧКУ ОТДЕЛЬНЫМ СООБЩЕНИЕМ
 
 @dp.callback_query(F.data == "free_key")
 async def free_key_handler(callback: types.CallbackQuery):
@@ -193,9 +191,9 @@ async def buy_handler(callback: types.CallbackQuery):
 
 @dp.callback_query(F.data == "rules")
 async def rules_handler(callback: types.CallbackQuery):
-    await callback.message.edit_text(
+await callback.message.edit_text(
         "📜 <b>Правила сервиса</b>\n\n"
-"1. Запрещено использовать VPN для незаконных действий.\n"
+        "1. Запрещено использовать VPN для незаконных действий.\n"
         "2. Одним ключом может пользоваться только один человек.",
         parse_mode="HTML",
         reply_markup=InlineKeyboardMarkup(inline_keyboard=[
@@ -214,7 +212,6 @@ async def referrals_handler(callback: types.CallbackQuery):
 
 @dp.callback_query(F.data == "back_to_main")
 async def back_handler(callback: types.CallbackQuery):
-    # НАЗВАНИЕ ИЗМЕНЕНО НА SMOKE VPN
     welcome_text = (
         f"🌐 <b>Smoke VPN</b>\n\n"
         f"🚀 <b>Как подключиться за 2 минуты:</b>\n\n"
@@ -233,9 +230,6 @@ async def main():
     bot = Bot(token=BOT_TOKEN)
     print("Бот Smoke VPN запущен и готов к работе!")
     await dp.start_polling(bot)
-
-if name == "main":
-    asyncio.run(main())
 
 if __name__ == "__main__":
     asyncio.run(main())
