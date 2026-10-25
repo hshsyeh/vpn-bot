@@ -6,11 +6,12 @@ from aiogram.filters import CommandStart
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # --- НАСТРОЙКИ ---
-BOT_TOKEN = "8860977552:AAEsSlQxOR_gsaTAS4ZAXuFVOoWLVB_WOIk"
+# ВНИМАНИЕ! ВСТАВЬТЕ СЮДА НОВЫЕ ТОКЕНЫ ПОСЛЕ ПЕРЕВЫПУСКА!
+BOT_TOKEN = "ВАШ_НОВЫЙ_ТОКЕН_БОТА_ЗДЕСЬ"
 
 # Настройки Remnawave
 REMNAWAVE_URL = "https://smoke6745.online" 
-REMNAWAVE_API_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiNjQ0MGJhYmYtMTIyMi00ZDJiLWFiNmUtYjgxMmU2NzVjZGY4IiwidXNlcm5hbWUiOm51bGwsInJvbGUiOiJBUEkiLCJpYXQiOjE3OTI4NjAwNTEsImV4cCI6MTc5NTQ1MjA1MX0.0CRTNQPzgU9RHxMXQNenkoZhOY8JFuZ0AtPY72xVbUU"
+REMNAWAVE_API_TOKEN = "ВАШ_НОВЫЙ_ТОКЕН_API_ЗДЕСЬ"
 # UUID вашего сквада (Настройки -> Внутренние сквады)
 REMNAWAVE_SQUAD_UUID = "6972f64e-feb0-4e76-9960-ab32bb8b9552"
 
@@ -46,7 +47,6 @@ async def create_vpn_key(username: str):
         "Content-Type": "application/json"
     }
     
-    # Данные для создания пользователя (безлимит, до 2099 года)
     user_data = {
         "username": username,
         "status": "ACTIVE",
@@ -58,18 +58,14 @@ async def create_vpn_key(username: str):
 
     async with aiohttp.ClientSession() as session:
         try:
-            # 1. Пытаемся создать пользователя
             async with session.post(f"{REMNAWAVE_URL}/api/users", json=user_data, headers=headers) as resp:
                 user_info = None
                 
-                # Если создан успешно
                 if resp.status in [200, 201]:
                     data = await resp.json()
-                    user_info = data.get("response", data) # В Remnawave ответ часто обернут в "response"
+                    user_info = data.get("response", data)
                 
-                # Если пользователь уже существует (ошибка 409)
                 elif resp.status == 409:
-                    # Запрашиваем данные существующего пользователя
                     async with session.get(f"{REMNAWAVE_URL}/api/users/by-username/{username}", headers=headers) as get_resp:
                         if get_resp.status == 200:
                             data = await get_resp.json()
@@ -81,9 +77,7 @@ async def create_vpn_key(username: str):
                     error_text = await resp.text()
                     return None, f"Ошибка создания: {error_text}"
                 
-                # 2. Формируем ссылку
                 if user_info:
-                    # В Remnawave ссылка на подписку лежит в поле subscriptionUrl
                     subscription_url = user_info.get("subscriptionUrl")
                     if subscription_url:
                         return subscription_url, None
@@ -111,8 +105,9 @@ def get_main_menu():
 async def start_handler(message: types.Message):
     await save_user(message.from_user)
     
+    # НАЗВАНИЕ ИЗМЕНЕНО НА SMOKE VPN
     welcome_text = (
-        f"🌐 <b>Nexyon VPN</b>\n\n"
+        f"🌐 <b>Smoke VPN</b>\n\n"
         f"🚀 <b>Как подключиться за 2 минуты:</b>\n\n"
         f"1️⃣ <b>Подписка</b> → купите или получите бесплатно\n"
         f"2️⃣ <b>Мой ключ</b> → создайте VPN-ключ\n"
@@ -122,7 +117,7 @@ async def start_handler(message: types.Message):
     )
     
     await message.answer(welcome_text, reply_markup=get_main_menu(), parse_mode="HTML")
-    await message.answer(".", reply_markup=types.ReplyKeyboardRemove())
+    # УДАЛЕНА СТРОКА, КОТОРАЯ ПРИСЫЛАЛА ТОЧКУ ОТДЕЛЬНЫМ СООБЩЕНИЕМ
 
 @dp.callback_query(F.data == "free_key")
 async def free_key_handler(callback: types.CallbackQuery):
@@ -195,11 +190,12 @@ async def buy_handler(callback: types.CallbackQuery):
         ])
     )
     await callback.answer()
+
 @dp.callback_query(F.data == "rules")
 async def rules_handler(callback: types.CallbackQuery):
     await callback.message.edit_text(
         "📜 <b>Правила сервиса</b>\n\n"
-        "1. Запрещено использовать VPN для незаконных действий.\n"
+"1. Запрещено использовать VPN для незаконных действий.\n"
         "2. Одним ключом может пользоваться только один человек.",
         parse_mode="HTML",
         reply_markup=InlineKeyboardMarkup(inline_keyboard=[
@@ -218,8 +214,9 @@ async def referrals_handler(callback: types.CallbackQuery):
 
 @dp.callback_query(F.data == "back_to_main")
 async def back_handler(callback: types.CallbackQuery):
+    # НАЗВАНИЕ ИЗМЕНЕНО НА SMOKE VPN
     welcome_text = (
-        f"🌐 <b>Nexyon VPN</b>\n\n"
+        f"🌐 <b>Smoke VPN</b>\n\n"
         f"🚀 <b>Как подключиться за 2 минуты:</b>\n\n"
         f"1️⃣ <b>Подписка</b> → купите или получите бесплатно\n"
         f"2️⃣ <b>Мой ключ</b> → создайте VPN-ключ\n"
@@ -234,8 +231,11 @@ async def back_handler(callback: types.CallbackQuery):
 async def main():
     await init_db()
     bot = Bot(token=BOT_TOKEN)
-    print("Бот запущен и готов к работе с Remnawave!")
+    print("Бот Smoke VPN запущен и готов к работе!")
     await dp.start_polling(bot)
+
+if name == "main":
+    asyncio.run(main())
 
 if __name__ == "__main__":
     asyncio.run(main())
