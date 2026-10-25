@@ -6,13 +6,9 @@ from aiogram.filters import CommandStart
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # --- НАСТРОЙКИ ---
-# ВАШ НОВЫЙ ТОКЕН
 BOT_TOKEN = "8860977552:AAHNNz_R0YcCzeeSR3f0N2xGFHCOcG-oygA"
-
-# Настройки Remnawave
 REMNAWAVE_URL = "https://smoke6745.online" 
 REMNAWAVE_API_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiNjQ0MGJhYmYtMTIyMi00ZDJiLWFiNmUtYjgxMmU2NzVjZGY4IiwidXNlcm5hbWUiOm51bGwsInJvbGUiOiJBUEkiLCJpYXQiOjE3OTI4NjAwNTEsImV4cCI6MTc5NTQ1MjA1MX0.0CRTNQPzgU9RHxMXQNenkoZhOY8JFuZ0AtPY72xVbUU"
-# UUID вашего сквада (Настройки -> Внутренние сквады)
 REMNAWAVE_SQUAD_UUID = "6972f64e-feb0-4e76-9960-ab32bb8b9552"
 
 dp = Dispatcher()
@@ -191,9 +187,9 @@ async def buy_handler(callback: types.CallbackQuery):
 
 @dp.callback_query(F.data == "rules")
 async def rules_handler(callback: types.CallbackQuery):
-await callback.message.edit_text(
+    await callback.message.edit_text(
         "📜 <b>Правила сервиса</b>\n\n"
-        "1. Запрещено использовать VPN для незаконных действий.\n"
+"1. Запрещено использовать VPN для незаконных действий.\n"
         "2. Одним ключом может пользоваться только один человек.",
         parse_mode="HTML",
         reply_markup=InlineKeyboardMarkup(inline_keyboard=[
