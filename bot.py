@@ -14,8 +14,8 @@ from aiogram.types import (
 
 # ================== НАСТРОЙКИ ==================
 BOT_TOKEN = "8860977552:AAHrNKeRnokKztmVWsDe8ac7bGo1hbRH2-E"
-ADMIN_ID = 5387282303                      # ваш Telegram ID
-CHANNEL_ID = -1004423436594              # ID канала (бот должен быть админом)
+ADMIN_ID = 5387282303
+CHANNEL_ID = -1004423436594
 CHANNEL_LINK = "https://t.me/SmokeVPN6745"
 SUPPORT_LINK = "https://t.me/SmokeVPN_6745"
 
