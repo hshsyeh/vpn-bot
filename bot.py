@@ -22,7 +22,7 @@ SUPPORT_LINK = "https://t.me/SmokeVPN_6745"
 DB_PATH = "smokevpn.db"
 
 REMNA_URL = "https://smoke6745.online"   # без слэша в конце
-REMNA_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiNTMxMDMyYjYtMTQwYy00ZDQ3LTlkNTItZjMyMzhlYjc3NjcwIiwidXNlcm5hbWUiOm51bGwsInJvbGUiOiJBUEkiLCJpYXQiOjE3OTI5MzkyODEsImV4cCI6MTkyMjUzOTI4MX0.MnVjDP_aToQdbSUqtJ9zx21ZSJaHzfB_G0Koj4UvqvU"
+REMNA_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjA2OGZhOTctZWNhOC00YjFhLWI1MTYtNWIzMmY5OWQ0MmY5IiwidXNlcm5hbWUiOm51bGwsInJvbGUiOiJBUEkiLCJpYXQiOjE3OTI5NTAwMzUsImV4cCI6MzUyMDk1MDAzNX0.tk_aHHgCG8GqaRbSRQqH8v-Ry3orSQFn4ZVgbVtXVX4"
 REMNA_HEADERS = {"Authorization": f"Bearer {REMNA_TOKEN}", "Content-Type": "application/json"}
 REMNA_SQUAD_UUID = "6972f64e-feb0-4e76-9960-ab32bb8b9552"                     # uuid internal squad (если используется), иначе ""
 
